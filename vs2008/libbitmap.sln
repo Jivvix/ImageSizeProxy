@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test.vcproj", "{FF0FC53C-CED3-4B38-B420-29B7ADA91214}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2CA86B09-83B8-4340-BC85-8E31B34F13A4} = {2CA86B09-83B8-4340-BC85-8E31B34F13A4}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libbitmap", "libbitmap.vcproj", "{2CA86B09-83B8-4340-BC85-8E31B34F13A4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2CA86B09-83B8-4340-BC85-8E31B34F13A4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2CA86B09-83B8-4340-BC85-8E31B34F13A4}.Debug|Win32.Build.0 = Debug|Win32
+		{2CA86B09-83B8-4340-BC85-8E31B34F13A4}.Release|Win32.ActiveCfg = Release|Win32
+		{2CA86B09-83B8-4340-BC85-8E31B34F13A4}.Release|Win32.Build.0 = Release|Win32
+		{FF0FC53C-CED3-4B38-B420-29B7ADA91214}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FF0FC53C-CED3-4B38-B420-29B7ADA91214}.Debug|Win32.Build.0 = Debug|Win32
+		{FF0FC53C-CED3-4B38-B420-29B7ADA91214}.Release|Win32.ActiveCfg = Release|Win32
+		{FF0FC53C-CED3-4B38-B420-29B7ADA91214}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
