@@ -12,8 +12,8 @@ template < size_t align >
 size_t align_size(size_t s)
 {
 	return ( align & align - 1 ) ? 
-		(s + align - 1) / align :       // align is not 2 ^ n
-	(s + align - 1) & ~(align - 1); // align is 2 ^ n
+		( (s + align - 1) / align ) * align :  // align is not 2 ^ n
+		(s + align - 1) & ~(align - 1);        // align is 2 ^ n
 }
 
 template < typename T >
@@ -759,6 +759,8 @@ private: // stream read/write
 
 bool Bitmap::load(const std::wstring & file_name)
 {
+	clear();
+	
 	std::ifstream file(file_name.c_str(), std::ios::in | std::ios::binary);
 
 	if ( !file.good() )
