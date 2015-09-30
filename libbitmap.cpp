@@ -6,8 +6,6 @@
 
 // -- commons ------------------------------------------------------------------------------------ //
 
-#define STATIC_ASSERT(expr) do { char a[(expr) ? 1 : -1]; (void)(a); } while (0)
-
 template < size_t align >
 size_t align_size(size_t s)
 {
@@ -757,11 +755,11 @@ private: // stream read/write
 
 // -- commons ------------------------------------------------------------------------------------ //
 
-bool Bitmap::load(const std::wstring & file_name)
+bool Bitmap::load(const wchar_t * file_name)
 {
 	clear();
 	
-	std::ifstream file(file_name.c_str(), std::ios::in | std::ios::binary);
+	std::ifstream file(file_name, std::ios::in | std::ios::binary);
 
 	if ( !file.good() )
 		return false;
@@ -838,9 +836,9 @@ bool Bitmap::load(const std::wstring & file_name)
 	return false;
 }
 
-bool Bitmap::save(const std::wstring & file_name) const
+bool Bitmap::save(const wchar_t * file_name) const
 {
-	std::ofstream file(file_name.c_str(), std::ios::out | std::ios::binary);
+	std::ofstream file(file_name, std::ios::out | std::ios::binary);
 
 	if ( !file.good() )
 		return false;
