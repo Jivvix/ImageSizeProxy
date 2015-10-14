@@ -6,9 +6,9 @@ void main(void)
 
 	// scenario #1: load, edit & save bitmap
 
-	bmp.load(L"..\\src\\kitty-24.bmp");
+	bmp.load("..\\src\\kitty-24.bmp");
 	bmp.m_buffer[10000] = 0x30;
-	bmp.save(L"out.bmp");
+	bmp.save("out.bmp");
 
 	bmp.clear(); // reset bitmap object -> ready to new data
 
@@ -28,5 +28,5 @@ void main(void)
 		}
 	}
 
-	bmp.save(L"gradient.bmp");
+	bmp.save("gradient.bmp");
 }

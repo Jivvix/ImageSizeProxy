@@ -1,6 +1,7 @@
 #include <fstream>
 #include <istream>
 #include <ostream>
+#include <cstring>
 #include <memory>
 #include "libbitmap.h"
 
@@ -9,7 +10,7 @@
 template < size_t align >
 size_t align_size(size_t s)
 {
-	return ( align & align - 1 ) ? 
+	return ( align & (align - 1) ) ? 
 		( (s + align - 1) / align ) * align :  // align is not 2 ^ n
 		(s + align - 1) & ~(align - 1);        // align is 2 ^ n
 }
@@ -27,7 +28,7 @@ static inline T limit(const T & x, const T & low, const T & hi)
 template < typename T >
 inline static void zero_object(T & object)
 {
-	::memset(&object, 0, sizeof(object));
+	memset(&object, 0, sizeof(object));
 }
 
 template < typename T >
@@ -46,8 +47,12 @@ static inline bool write_object(std::ostream & s, const T & object, std::streams
 
 enum mark_t : uint16_t 
 { 
-	markBM = 'MB', 
-	markBA = 'AB', markCI = 'IC', markCP = 'PC', markIC = 'CI', markPT = 'TP', 
+	markBM = 0x4D42 /*'MB'*/, 
+	markBA = 0x4142 /*'AB'*/, 
+	markCI = 0x4943 /*'IC'*/,
+	markCP = 0x5043 /*'PC'*/,
+	markIC = 0x4349 /*'CI'*/,
+	markPT = 0x5450 /*'TP'*/,
 };
 
 enum mode_t : uint32_t 
@@ -155,7 +160,7 @@ public:
 	template < typename T >
 	void encode(uint8_t input, T & value) const
 	{
-		const double v = limit(0.5 + input * m_max_value / 255.0, 0.0, m_max_value);
+		const double v = limit(0.5 + input * m_max_value / 255.0, 0.0, double(m_max_value));
 		value |= T(v) << m_tail_zeroes;
 	}
 };
@@ -755,7 +760,7 @@ private: // stream read/write
 
 // -- commons ------------------------------------------------------------------------------------ //
 
-bool Bitmap::load(const wchar_t * file_name)
+bool Bitmap::load(const char * file_name)
 {
 	clear();
 	
@@ -787,9 +792,8 @@ bool Bitmap::load(const wchar_t * file_name)
 
 	const size_t internal_size = ::get_pixel_array_size(width, height, internal_depth);
 
-	std::auto_ptr < uint8_t > buffer( new uint8_t [internal_size] );
+	std::unique_ptr < uint8_t[] > buffer = std::make_unique < uint8_t[] > (internal_size);
 
-	const size_t internal_line_size = ::get_line_size(width, internal_depth);
 	const ptrdiff_t internal_stride = topdown ? 
 		::get_stride(width, internal_depth) : 
 		-ptrdiff_t(::get_stride(width, internal_depth));
@@ -836,7 +840,7 @@ bool Bitmap::load(const wchar_t * file_name)
 	return false;
 }
 
-bool Bitmap::save(const wchar_t * file_name) const
+bool Bitmap::save(const char * file_name) const
 {
 	std::ofstream file(file_name, std::ios::out | std::ios::binary);
 

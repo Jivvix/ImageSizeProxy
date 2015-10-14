@@ -19,13 +19,13 @@ public:
 	}
 
 public:
-	bool load(const wchar_t * file_name);
-	inline bool load(const std::wstring & file_name)
+	bool load(const char * file_name);
+	inline bool load(const std::string & file_name)
 	{
 		return load(file_name.c_str());
 	}
-	bool save(const wchar_t * file_name) const;
-	inline bool save(const std::wstring & file_name) const
+	bool save(const char * file_name) const;
+	inline bool save(const std::string & file_name) const
 	{
 		return save(file_name.c_str());
 	}
