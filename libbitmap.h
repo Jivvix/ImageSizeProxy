@@ -39,8 +39,8 @@ public:
 	}
 
 private:
-	Bitmap(const Bitmap &);
-	Bitmap & operator = (const Bitmap &);
+	Bitmap(const Bitmap &) = delete;
+	Bitmap & operator = (const Bitmap &) = delete;
 };
 
 #endif // ___LIB_BITMAP_H___

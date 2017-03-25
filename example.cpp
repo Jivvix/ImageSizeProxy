@@ -1,6 +1,6 @@
-#include "libbitmap.h"
+#include <libbitmap.h>
 
-void main(void)
+int main(void)
 {
 	Bitmap bmp;
 
@@ -29,4 +29,6 @@ void main(void)
 	}
 
 	bmp.save("gradient.bmp");
+
+	return 0;
 }

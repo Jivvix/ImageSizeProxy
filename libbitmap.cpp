@@ -5,14 +5,16 @@
 #include <memory>
 #include "libbitmap.h"
 
+namespace detail
+{
 // -- commons ------------------------------------------------------------------------------------ //
 
 template < size_t align >
 size_t align_size(size_t s)
 {
-	return ( align & (align - 1) ) ? 
-		( (s + align - 1) / align ) * align :  // align is not 2 ^ n
-		(s + align - 1) & ~(align - 1);        // align is 2 ^ n
+	return ( align & ( align - 1 ) ) ?
+		( ( s + align - 1 ) / align ) * align :  // align is not 2 ^ n
+		( s + align - 1 ) & ~( align - 1 );        // align is 2 ^ n
 }
 
 template < typename T >
@@ -34,43 +36,44 @@ inline static void zero_object(T & object)
 template < typename T >
 inline static bool read_object(std::istream & s, T & object, std::streamsize size = sizeof(T))
 {
-	return s.read((char *) &object, size).good();
+	return s.read((char *)&object, size).good();
 }
 
 template < class T >
 static inline bool write_object(std::ostream & s, const T & object, std::streamsize size = sizeof(T))
 {
-	return s.write((char *) &object, size).flush().good();
+	return s.write((char *)&object, size).flush().good();
 }
+
 
 // -- bitmap types ------------------------------------------------------------------------------- //
 
-enum mark_t : uint16_t 
-{ 
-	markBM = 0x4D42 /*'MB'*/, 
-	markBA = 0x4142 /*'AB'*/, 
+enum mark_t : uint16_t
+{
+	markBM = 0x4D42 /*'MB'*/,
+	markBA = 0x4142 /*'AB'*/,
 	markCI = 0x4943 /*'IC'*/,
 	markCP = 0x5043 /*'PC'*/,
 	markIC = 0x4349 /*'CI'*/,
 	markPT = 0x5450 /*'TP'*/,
 };
 
-enum mode_t : uint32_t 
-{ 
-	modeRGB = 0, 
-	modeRLE8 = 1, modeRLE4 = 2, 
-	modeBitFields = 3, modeAlphaBitFields = 6, 
-	modeJPEG = 4, modePNG = 5, 
+enum color_mode_t : uint32_t
+{
+	modeRGB = 0,
+	modeRLE8 = 1, modeRLE4 = 2,
+	modeBitFields = 3, modeAlphaBitFields = 6,
+	modeJPEG = 4, modePNG = 5,
 };
 
-enum depth_t : uint16_t 
-{ 
-	bpp0 = 0, bpp1 = 1, bpp2 = 2, bpp4 = 4, bpp8 = 8, 
-	bpp16 = 16, bpp24 = 24, bpp32 = 32, bpp48 = 48, bpp64 = 64, 
+enum depth_t : uint16_t
+{
+	bpp0 = 0, bpp1 = 1, bpp2 = 2, bpp4 = 4, bpp8 = 8,
+	bpp16 = 16, bpp24 = 24, bpp32 = 32, bpp48 = 48, bpp64 = 64,
 };
 
-enum version_t : uint32_t 
-{ 
+enum version_t : uint32_t
+{
 	core = 12,   // sizeof(BITMAPCOREHEADER)
 	info3 = 40,  // sizeof(BITMAPINFOHEADER)
 	info31 = 52, // sizeof(BITMAPINFOHEADER)+ sizeof(masks)
@@ -84,12 +87,12 @@ enum version_t : uint32_t
 
 inline size_t get_line_size(size_t width, size_t bpp)
 {
-	return align_size < 8 > (width * bpp) >> 3;
+	return align_size < 8 >(width * bpp) >> 3;
 }
 
 inline size_t get_stride(size_t width, size_t bpp)
 {
-	return align_size < 32 > (width * bpp) >> 3;
+	return align_size < 32 >(width * bpp) >> 3;
 }
 
 inline size_t get_padding(size_t width, size_t bpp)
@@ -113,7 +116,7 @@ private:
 
 public:
 
-	BitField(void)  { zero_object(*this); }
+	BitField(void) { zero_object(*this); }
 	~BitField(void) {}
 
 public: // initializations
@@ -131,16 +134,16 @@ public: // initializations
 		size_t l = 0, t = 0;
 		for ( size_t bit = s >> 1; bit > 0; bit >>= 1 )
 		{
-			if ( m >> (l | bit) )
+			if ( m >> ( l | bit ) )
 				l |= bit;
-			if ( m << (t | bit) )
+			if ( m << ( t | bit ) )
 				t |= bit;
 		}
 
 		m_lead_zeroes = s - 1 - l;
 		m_tail_zeroes = s - 1 - t;
 		m_width = s - m_lead_zeroes - m_tail_zeroes;
-		m_max_value = (uint32_t(1) << m_width) - 1;
+		m_max_value = ( uint32_t(1) << m_width ) - 1;
 
 		return m == mask();
 	}
@@ -155,7 +158,7 @@ public:
 	void decode(T value, uint8_t & output) const
 	{
 		const T v = ( value >> m_tail_zeroes ) & m_max_value;
-		output = v << (sizeof(uint8_t) * 8 - m_width);
+		output = v << ( sizeof(uint8_t) * 8 - m_width );
 	}
 	template < typename T >
 	void encode(uint8_t input, T & value) const
@@ -179,7 +182,7 @@ private: // attributes
 	union
 	{
 		char m_buffer[buffer_size];
-		struct 
+		struct
 		{
 			uint32_t m_length;      // the size, in bytes, of the bitmap file
 			uint16_t m_reserved[2]; // reserved, must be zero
@@ -243,8 +246,8 @@ private: // attributes
 
 	enum details : size_t
 	{
-		core_buffer_size = 8, info_buffer_size = 120, palette_length = 256, 
-		palette_core_entry = 3, palette_info_entry = 4, 
+		core_buffer_size = 8, info_buffer_size = 120, palette_length = 256,
+		palette_core_entry = 3, palette_info_entry = 4,
 	};
 
 private:
@@ -252,7 +255,7 @@ private:
 	union
 	{
 		char m_core_buffer[core_buffer_size];
-		struct 
+		struct
 		{
 			// BITMAPCOREHEADER
 			uint16_t width, height, planes;
@@ -260,13 +263,13 @@ private:
 		}
 		m_core;
 		char m_info_buffer[info_buffer_size];
-		struct  
+		struct
 		{
 			// BITMAPINFOHEADER, BITMAPV4INFOHEADER, BITMAPV5INFOHEADER
 			int32_t  width, height;
 			uint16_t planes;
 			depth_t  depth;
-			mode_t   mode;
+			color_mode_t   mode;
 			uint32_t image_size;
 			int32_t  resolution[2]; // x, y
 			uint32_t colors_used, colors_important;
@@ -278,7 +281,7 @@ private:
 			ColorXYZ end_point[3];  // r, g, b
 			uint32_t gamma[3];      // r, g, b
 
-			// BITMAPV5INFOHEADER
+									// BITMAPV5INFOHEADER
 			uint32_t intent, profile_offset, profile_size;
 			uint32_t reserved;
 		}
@@ -299,10 +302,10 @@ private:
 public: // constructor
 
 	BitmapHeader(
-		version_t v = info3, 
-		size_t w = 0, size_t h = 0, bool td = false, 
-		depth_t d = bpp24, mode_t m = modeRGB
-		)
+		version_t v = info3,
+		size_t w = 0, size_t h = 0, bool td = false,
+		depth_t d = bpp24, color_mode_t m = modeRGB
+	)
 	{
 		clean();
 
@@ -430,7 +433,7 @@ public: // read-only accessors
 	{
 		return core_version() ? m_core.depth : m_info.depth;
 	}
-	inline mode_t mode(void) const
+	inline color_mode_t mode(void) const
 	{
 		return core_version() ? modeRGB : m_info.mode;
 	}
@@ -472,7 +475,7 @@ public: // palette / colors manipulations
 
 	inline size_t colors(void) const { return m_colors; }
 
-	inline uint8_t *       palette(size_t i)       { return m_palette[i % m_colors]; }
+	inline uint8_t *       palette(size_t i) { return m_palette[i % m_colors]; }
 	inline const uint8_t * palette(size_t i) const { return m_palette[i % m_colors]; }
 
 public: // image size
@@ -488,7 +491,7 @@ public: // image size
 
 	inline size_t image_size(void) const
 	{
-		return core_version() || m_info.image_size == 0 ? 
+		return core_version() || m_info.image_size == 0 ?
 			get_pixel_array_size(width(), height(), depth()) : size_t(m_info.image_size);
 	}
 
@@ -530,7 +533,7 @@ private: // validation
 		if ( m_core.width == 0 || m_core.height == 0 )
 			return false; // invalid image dimentions
 
-		if ( m_core.depth != bpp1 && m_core.depth != bpp2 
+		if ( m_core.depth != bpp1 && m_core.depth != bpp2
 			&& m_core.depth != bpp4 && m_core.depth != bpp8 && m_core.depth != bpp24 )
 			return false; // unsupported depth
 
@@ -545,10 +548,10 @@ private: // validation
 		if ( m_info.width <= 0 || m_info.height == 0 )
 			return false; // invalid image dimentions
 
-		if ( m_info.depth != bpp0 
-			&& m_info.depth != bpp1 && m_info.depth != bpp2 
-			&& m_info.depth != bpp4 && m_info.depth != bpp8 
-			&& m_info.depth != bpp16 && m_info.depth != bpp24 && m_info.depth != bpp32 
+		if ( m_info.depth != bpp0
+			&& m_info.depth != bpp1 && m_info.depth != bpp2
+			&& m_info.depth != bpp4 && m_info.depth != bpp8
+			&& m_info.depth != bpp16 && m_info.depth != bpp24 && m_info.depth != bpp32
 			&& m_info.depth != bpp48 && m_info.depth != bpp64 )
 			return false; // unsupported depth
 
@@ -650,7 +653,7 @@ private: // stream read/write
 		if ( m_info.depth <= bpp8 ) // use palette
 		{
 			const size_t m = size_t(1) << m_info.depth;
-			m_colors = m_info.colors_used && size_t(m_info.colors_used) < m ? 
+			m_colors = m_info.colors_used && size_t(m_info.colors_used) < m ?
 				size_t(m_info.colors_used) : m;
 
 			for ( size_t i = 0; i < m_colors; ++i )
@@ -699,9 +702,9 @@ private: // stream read/write
 
 		if ( m_info.depth == bpp16 || m_info.depth == bpp32 )
 		{
-			if ( m_info.mask[0] != m_bit_field[0].mask() 
+			if ( m_info.mask[0] != m_bit_field[0].mask()
 				|| m_info.mask[1] != m_bit_field[1].mask()
-				|| m_info.mask[2] != m_bit_field[2].mask() 
+				|| m_info.mask[2] != m_bit_field[2].mask()
 				|| m_info.mask_alpha != m_bit_field[3].mask() )
 				return false; // m_masks & m_bit_filds are not syncronized
 		}
@@ -757,11 +760,15 @@ private: // stream read/write
 
 };
 
+}
 
 // -- commons ------------------------------------------------------------------------------------ //
 
+
 bool Bitmap::load(const char * file_name)
 {
+	using namespace detail;
+
 	clear();
 	
 	std::ifstream file(file_name, std::ios::in | std::ios::binary);
@@ -786,17 +793,17 @@ bool Bitmap::load(const char * file_name)
 	const size_t  width   = header.width();
 	const size_t  height  = header.height();
 	const bool    topdown = header.topdown();
-	const mode_t  mode    = header.mode();
+	const color_mode_t  mode    = header.mode();
 	const depth_t depth   = header.depth();
 
 
-	const size_t internal_size = ::get_pixel_array_size(width, height, internal_depth);
+	const size_t internal_size = get_pixel_array_size(width, height, internal_depth);
 
 	std::unique_ptr < uint8_t[] > buffer = std::make_unique < uint8_t[] > (internal_size);
 
 	const ptrdiff_t internal_stride = topdown ? 
-		::get_stride(width, internal_depth) : 
-		-ptrdiff_t(::get_stride(width, internal_depth));
+		get_stride(width, internal_depth) : 
+		-ptrdiff_t(get_stride(width, internal_depth));
 	uint8_t * const start = buffer.get() + (topdown ? 0 : internal_size + internal_stride);
 
 	uint32_t dummy;
@@ -805,8 +812,8 @@ bool Bitmap::load(const char * file_name)
 	{
 		if ( depth == bpp24 )
 		{
-			const std::streamsize padding = std::streamsize(::get_padding(width, depth));
-			const std::streamsize line_size = std::streamsize(::get_line_size(width, depth));
+			const std::streamsize padding = std::streamsize(get_padding(width, depth));
+			const std::streamsize line_size = std::streamsize(get_line_size(width, depth));
 
 			for ( size_t y = 0; y < height; ++y )
 			{
@@ -842,6 +849,8 @@ bool Bitmap::load(const char * file_name)
 
 bool Bitmap::save(const char * file_name) const
 {
+	using namespace detail;
+
 	std::ofstream file(file_name, std::ios::out | std::ios::binary);
 
 	if ( !file.good() )
@@ -865,12 +874,12 @@ bool Bitmap::save(const char * file_name) const
 	const bool topdown = header.topdown();
 	const uint32_t dummy = 0;
 
-	const size_t buffer_size = ::get_pixel_array_size(m_width, m_height, 24);
-	const ptrdiff_t buffer_stride = topdown ? ::get_stride(m_width, 24) : -ptrdiff_t(::get_stride(m_width, 24));
+	const size_t buffer_size = get_pixel_array_size(m_width, m_height, 24);
+	const ptrdiff_t buffer_stride = topdown ? get_stride(m_width, 24) : -ptrdiff_t(get_stride(m_width, 24));
 	uint8_t * const buffer_start = topdown ? m_buffer : m_buffer + buffer_size + buffer_stride;
 
-	const std::streamsize padding = std::streamsize(::get_padding(m_width, 24));
-	const std::streamsize line_size = std::streamsize(::get_line_size(m_width, 24));
+	const std::streamsize padding = std::streamsize(get_padding(m_width, 24));
+	const std::streamsize line_size = std::streamsize(get_line_size(m_width, 24));
 
 	for ( size_t y = 0; y < m_height; ++y )
 	{
