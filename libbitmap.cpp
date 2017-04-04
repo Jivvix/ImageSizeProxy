@@ -79,7 +79,7 @@ enum version_t : uint32_t
 	info31 = 52, // sizeof(BITMAPINFOHEADER)+ sizeof(masks)
 	info32 = 56, // sizeof(BITMAPINFOHEADER)+ sizeof(masks) + + sizeof(mask_alpha)
 	info4 = 108, // sizeof(BITMAPINFOV4HEADER)
-	info5 = 124, // sizeof(BITMAPINFOV4HEADER) 
+	info5 = 124, // sizeof(BITMAPINFOV4HEADER)
 };
 
 // -- bitmap size calculations ------------------------------------------------------------------- //
@@ -770,7 +770,7 @@ bool Bitmap::load(const char * file_name)
 	using namespace detail;
 
 	clear();
-	
+
 	std::ifstream file(file_name, std::ios::in | std::ios::binary);
 
 	if ( !file.good() )
@@ -799,10 +799,10 @@ bool Bitmap::load(const char * file_name)
 
 	const size_t internal_size = get_pixel_array_size(width, height, internal_depth);
 
-	std::unique_ptr < uint8_t[] > buffer = std::make_unique < uint8_t[] > (internal_size);
+	std::unique_ptr <uint8_t> buffer = std::unique_ptr<uint8_t>(new uint8_t[internal_size]);
 
-	const ptrdiff_t internal_stride = topdown ? 
-		get_stride(width, internal_depth) : 
+	const ptrdiff_t internal_stride = topdown ?
+		get_stride(width, internal_depth) :
 		-ptrdiff_t(get_stride(width, internal_depth));
 	uint8_t * const start = buffer.get() + (topdown ? 0 : internal_size + internal_stride);
 
